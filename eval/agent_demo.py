@@ -40,9 +40,13 @@ def main():
         },
     }
 
-    profile_summary = orchestrator.setup_user(user_id, setup_payload)
+    setup_result = orchestrator.setup_user(user_id, setup_payload)
+    profile_summary = setup_result["profile_summary"]
+    session_info = setup_result["session"]
+
     print("Profile summary after setup:")
     print(profile_summary["summary_text"])
+    print("Session after setup:", session_info)
     print()
 
     # 2. Plan for a day

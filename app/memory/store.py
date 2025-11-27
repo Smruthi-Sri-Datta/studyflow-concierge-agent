@@ -17,7 +17,13 @@ def _default_state() -> Dict[str, Any]:
             "max_blocks_per_day": 3,
         },
         "history": [],   # reflections / past sessions
+        "session": {     # simple session tracking
+            "current_session_id": None,
+            "last_interaction_at": None,
+            "interaction_count": 0,
+        },
     }
+
 
 
 def get_user_state(user_id: str) -> Dict[str, Any]:

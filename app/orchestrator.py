@@ -20,22 +20,27 @@ def setup_user(user_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
     {
         "courses": [...],
         "tasks": [...],
-        "profile": {
-            "preferred_block_minutes": 45,
-            "max_blocks_per_day": 3
-        }
+        "profile": {...}
     }
     """
     courses = payload.get("courses", [])
     tasks = payload.get("tasks", [])
     profile = payload.get("profile", {})
 
-    return memory_agent.setup_user(
+    profile_summary = memory_agent.setup_user(
         user_id=user_id,
         courses=courses,
         tasks=tasks,
         profile_overrides=profile,
     )
+
+    # Start a fresh session for this user (e.g., onboarding session)
+    session = memory_agent.start_or_continue_session(user_id)
+
+    return {
+        "profile_summary": profile_summary,
+        "session": session,
+    }
 
 
 def plan_day(user_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
@@ -45,37 +50,36 @@ def plan_day(user_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
     payload example:
     {
         "date": "2025-11-28",
-        "available_windows": [
-            {"start": "19:00", "end": "21:00"}
-        ]
+        "available_windows": [...],
+        "session_id": "optional-session-id"
     }
     """
     date_str = payload["date"]
     available_windows: List[Dict[str, str]] = payload["available_windows"]
+    session_id = payload.get("session_id")
 
-    return planner_agent.plan_day(user_id, date_str, available_windows)
+    # Update session info (or start a new one if none)
+    session = memory_agent.start_or_continue_session(user_id, session_id=session_id)
+
+    plan = planner_agent.plan_day(user_id, date_str, available_windows)
+    plan["session"] = session
+    return plan
 
 
 def reflect(user_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
     """
     Handle reflection after a study session.
-
-    payload example:
-    {
-        "completed_task_ids": [...],
-        "partial_task_ids": [...],
-        "difficulty_rating": 3,
-        "notes": "CNN math was harder than expected.",
-        "date": "2025-11-28"   # optional
-    }
     """
     completed = payload.get("completed_task_ids", [])
     partial = payload.get("partial_task_ids", [])
     rating = int(payload.get("difficulty_rating", 3))
     notes = payload.get("notes", "")
     date_str = payload.get("date")
+    session_id = payload.get("session_id")
 
-    return reflection_agent.reflect(
+    session = memory_agent.start_or_continue_session(user_id, session_id=session_id)
+
+    reflection_result = reflection_agent.reflect(
         user_id=user_id,
         completed_task_ids=completed,
         partial_task_ids=partial,
@@ -83,8 +87,12 @@ def reflect(user_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         notes=notes,
         date_str=date_str,
     )
+    reflection_result["session"] = session
+    return reflection_result
 
 
 def get_status(user_id: str) -> Dict[str, Any]:
     """Return basic progress status for the user."""
-    return memory_agent.get_status(user_id)
+    status = memory_agent.get_status(user_id)
+    status["session"] = memory_agent.get_session_info(user_id)
+    return status
