@@ -2,9 +2,9 @@
 
 from typing import Any, Dict, List
 
-from app.agents.memory_agent import MemoryAgent
-from app.agents.planner_agent import PlannerAgent
-from app.agents.reflection_agent import ReflectionAgent
+from app.domain.agents.memory_agent import MemoryAgent
+from app.domain.agents.planner_agent import PlannerAgent
+from app.domain.agents.reflection_agent import ReflectionAgent
 
 
 memory_agent = MemoryAgent()

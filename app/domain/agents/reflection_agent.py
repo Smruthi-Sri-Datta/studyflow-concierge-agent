@@ -3,8 +3,8 @@
 from datetime import datetime
 from typing import Any, Dict, List
 
-from app.agents.memory_agent import MemoryAgent
-from app.memory.store import get_user_state, save_user_state
+from app.domain.agents.memory_agent import MemoryAgent
+from app.domain.memory.store import get_user_state, save_user_state
 
 
 class ReflectionAgent:

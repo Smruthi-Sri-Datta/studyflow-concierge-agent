@@ -2,8 +2,8 @@
 
 from typing import Any, Dict, List
 
-from app.agents.memory_agent import MemoryAgent
-from app.tools.scheduling_tool import schedule_day
+from app.domain.agents.memory_agent import MemoryAgent
+from app.domain.tools.scheduling_tool import schedule_day
 
 
 class PlannerAgent:

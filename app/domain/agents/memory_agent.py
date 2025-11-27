@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Any, Dict, List
 
-from app.memory.store import get_user_state, save_user_state
+from app.domain.memory.store import get_user_state, save_user_state
 
 
 class MemoryAgent:
