@@ -1,0 +1,25 @@
+{
+  "user_id": "demo_user",
+  "courses": [
+    { "course_id": "DL101", "name": "Deep Learning" },
+    { "course_id": "NW201", "name": "Computer Networks" }
+  ],
+  "tasks": [
+    {
+      "task_id": "DL101-CNN-01",
+      "course_id": "DL101",
+      "title": "Revise CNN basics",
+      "deadline_date": "2025-12-05"
+    },
+    {
+      "task_id": "NW201-Routing-01",
+      "course_id": "NW201",
+      "title": "Routing protocol tutorial sheet",
+      "deadline_date": "2025-11-30"
+    }
+  ],
+  "profile": {
+    "preferred_block_minutes": 45,
+    "max_blocks_per_day": 2
+  }
+}

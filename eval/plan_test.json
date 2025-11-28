@@ -1,0 +1,7 @@
+{
+  "user_id": "demo_user",
+  "date": "2025-11-28",
+  "available_windows": [
+    { "start": "19:00", "end": "21:00" }
+  ]
+}

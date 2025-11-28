@@ -1,0 +1,8 @@
+{
+  "user_id": "demo_user",
+  "completed_task_ids": ["NW201-Routing-01"],
+  "partial_task_ids": ["DL101-CNN-01"],
+  "difficulty_rating": 4,
+  "notes": "Routing was fine, CNN math was hard.",
+  "date": "2025-11-28"
+}
