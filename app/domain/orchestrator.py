@@ -1,10 +1,11 @@
-# app/orchestrator.py
+# app/domain/orchestrator.py
 
 from typing import Any, Dict, List
 
 from app.domain.agents.memory_agent import MemoryAgent
 from app.domain.agents.planner_agent import PlannerAgent
 from app.domain.agents.reflection_agent import ReflectionAgent
+from app.llm.tools import generate_reflection_feedback
 
 
 memory_agent = MemoryAgent()
@@ -16,7 +17,7 @@ def setup_user(user_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
     """
     Initialize user courses, tasks and profile.
 
-    payload format example:
+    payload example:
     {
         "courses": [...],
         "tasks": [...],
@@ -34,7 +35,7 @@ def setup_user(user_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         profile_overrides=profile,
     )
 
-    # Start a fresh session for this user (e.g., onboarding session)
+    # Start a fresh session for this user
     session = memory_agent.start_or_continue_session(user_id)
 
     return {
@@ -68,31 +69,54 @@ def plan_day(user_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
 
 def reflect(user_id: str, payload: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Handle reflection after a study session.
+    High-level reflection flow:
+      - update tasks & history
+      - adapt profile
+      - update session
+      - generate LLM feedback
+      - return combined result
     """
-    completed = payload.get("completed_task_ids", [])
-    partial = payload.get("partial_task_ids", [])
-    rating = int(payload.get("difficulty_rating", 3))
+    completed_task_ids = payload.get("completed_task_ids", [])
+    partial_task_ids = payload.get("partial_task_ids", [])
+    difficulty_rating = payload.get("difficulty_rating", 3)
     notes = payload.get("notes", "")
     date_str = payload.get("date")
-    session_id = payload.get("session_id")
 
-    session = memory_agent.start_or_continue_session(user_id, session_id=session_id)
-
+    # 1. Core reflection logic (updates state)
     reflection_result = reflection_agent.reflect(
         user_id=user_id,
-        completed_task_ids=completed,
-        partial_task_ids=partial,
-        difficulty_rating=rating,
+        completed_task_ids=completed_task_ids,
+        partial_task_ids=partial_task_ids,
+        difficulty_rating=difficulty_rating,
         notes=notes,
         date_str=date_str,
     )
-    reflection_result["session"] = session
-    return reflection_result
+
+    history_entry = reflection_result["history_entry"]
+    profile = reflection_result["updated_profile"]
+
+    # 2. Update / continue session
+    session = memory_agent.start_or_continue_session(user_id)
+
+    # 3. Get status for feedback
+    status = memory_agent.get_status(user_id)
+
+    # 4. LLM feedback
+    feedback_text = generate_reflection_feedback(history_entry, status)
+
+    # 5. Combined result
+    return {
+        "history_entry": history_entry,
+        "updated_profile": profile,
+        "session": session,
+        "feedback_text": feedback_text,
+    }
 
 
 def get_status(user_id: str) -> Dict[str, Any]:
-    """Return basic progress status for the user."""
+    """
+    Return basic progress status for the user.
+    """
     status = memory_agent.get_status(user_id)
     status["session"] = memory_agent.get_session_info(user_id)
     return status

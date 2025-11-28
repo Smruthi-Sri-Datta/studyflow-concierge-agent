@@ -1,4 +1,4 @@
-# app/agents/reflection_agent.py
+# app/domain/agents/reflection_agent.py
 
 from datetime import datetime
 from typing import Any, Dict, List
@@ -29,7 +29,7 @@ class ReflectionAgent:
         if date_str is None:
             date_str = datetime.today().strftime("%Y-%m-%d")
 
-        # Update tasks and history via MemoryAgent
+        # 1. Update tasks and history via MemoryAgent
         history_entry = self.memory_agent.update_tasks_and_history(
             user_id=user_id,
             completed_task_ids=completed_task_ids,
@@ -39,16 +39,20 @@ class ReflectionAgent:
             date_str=date_str,
         )
 
-        # Simple adaptation rule for profile:
-        # - if user struggled (rating >=4 and many partial tasks), reduce max_blocks_per_day
-        # - if user found it easy (rating <=2 and all tasks done), increase max_blocks_per_day (up to 5)
+        # 2. Simple adaptation rule for profile:
+        #    - if user struggled (rating >= 4 and some partial tasks) -> reduce max_blocks_per_day
+        #    - if user found it easy (rating <= 2 and all tasks done) -> increase max_blocks_per_day (up to 5)
         state = get_user_state(user_id)
         profile = state["profile"]
         max_blocks = profile.get("max_blocks_per_day", 3)
 
         if difficulty_rating >= 4 and len(partial_task_ids) > 0:
             max_blocks = max(1, max_blocks - 1)
-        elif difficulty_rating <= 2 and len(partial_task_ids) == 0 and len(completed_task_ids) >= max_blocks:
+        elif (
+            difficulty_rating <= 2
+            and len(partial_task_ids) == 0
+            and len(completed_task_ids) >= max_blocks
+        ):
             max_blocks = min(5, max_blocks + 1)
 
         profile["max_blocks_per_day"] = max_blocks

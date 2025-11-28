@@ -76,6 +76,11 @@ def main():
     print("Reflection result:")
     print(reflection)
     print()
+    
+    print("LLM feedback:")
+    print(reflection["feedback_text"])
+    print()
+
 
     # 4. Check status
     status = orchestrator.get_status(user_id)
