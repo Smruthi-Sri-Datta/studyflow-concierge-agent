@@ -42,6 +42,7 @@ app/llm/    # Gemini client and prompts
 deploy/     # Cloud Run instructions
 eval/       # Test JSON payloads
 Dockerfile  # Container build for Cloud Run
+```
 
 ---
 
