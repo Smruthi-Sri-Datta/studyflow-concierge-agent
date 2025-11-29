@@ -43,9 +43,12 @@ deploy/     # Cloud Run instructions
 eval/       # Test JSON payloads
 Dockerfile  # Container build for Cloud Run
 
+---
 
 Local Run
 uvicorn app.api:app --reload --port 8000
+
+---
 
 Deployment (Cloud Run)
 gcloud run deploy studyflow-concierge-agent \
@@ -54,6 +57,8 @@ gcloud run deploy studyflow-concierge-agent \
   --allow-unauthenticated \
   --set-env-vars=GEMINI_API_KEY=YOUR_KEY
 
+---
+
 Testing
 # Assuming BASE is your Cloud Run URL
 curl -X POST "$BASE/setup_user"  -H "Content-Type: application/json" -d "@eval/setup_test.json"
@@ -61,7 +66,11 @@ curl -X POST "$BASE/plan_day"    -H "Content-Type: application/json" -d "@eval/p
 curl -X POST "$BASE/reflect"     -H "Content-Type: application/json" -d "@eval/reflect_test.json"
 curl "$BASE/status?user_id=demo_user"
 
-License
+---
 
+License
 For educational and evaluation use.
+
+
+
 
