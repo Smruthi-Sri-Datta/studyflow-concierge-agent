@@ -69,8 +69,8 @@ curl "$BASE/status?user_id=demo_user"
 
 ---
 
-License
-For educational and evaluation use.
+# License
+For educational and evaluation use.\
 
 
 
