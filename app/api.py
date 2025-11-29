@@ -7,6 +7,29 @@ from app.domain import orchestrator
 
 app = FastAPI(title="StudyFlow Concierge API")
 
+from fastapi import FastAPI
+# ...your existing imports...
+
+app = FastAPI(title="Studyflow Concierge Agent")
+
+@app.get("/")
+async def root():
+    return {
+        "service": "studyflow-concierge-agent",
+        "status": "ok",
+        "message": "API is running on Cloud Run.",
+        "endpoints": {
+            "POST /setup_user": "Initialize user profile, courses, tasks",
+            "POST /plan_day": "Plan study blocks for a given day",
+            "POST /reflect": "Log reflection & get feedback",
+            "GET  /status": "View current study status",
+        },
+    }
+
+# (keep the rest of your existing /setup_user, /plan_day, /reflect, /status
+# routes exactly as they are)
+
+
 
 # ---------- Request models ----------
 
@@ -102,3 +125,4 @@ def reflect(payload: ReflectPayload) -> Dict[str, Any]:
 @app.get("/status")
 def get_status(user_id: str) -> Dict[str, Any]:
     return orchestrator.get_status(user_id)
+
