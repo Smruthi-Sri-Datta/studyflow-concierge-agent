@@ -46,12 +46,12 @@ Dockerfile  # Container build for Cloud Run
 
 ---
 
-Local Run
+# Local Run
 uvicorn app.api:app --reload --port 8000
 
 ---
 
-Deployment (Cloud Run)
+# Deployment (Cloud Run)
 gcloud run deploy studyflow-concierge-agent \
   --source . \
   --region=asia-east1 \
@@ -60,8 +60,8 @@ gcloud run deploy studyflow-concierge-agent \
 
 ---
 
-Testing
-# Assuming BASE is your Cloud Run URL
+# Testing
+Assuming BASE is your Cloud Run URL
 curl -X POST "$BASE/setup_user"  -H "Content-Type: application/json" -d "@eval/setup_test.json"
 curl -X POST "$BASE/plan_day"    -H "Content-Type: application/json" -d "@eval/plan_test.json"
 curl -X POST "$BASE/reflect"     -H "Content-Type: application/json" -d "@eval/reflect_test.json"
