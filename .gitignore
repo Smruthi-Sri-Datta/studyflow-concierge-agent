@@ -16,3 +16,6 @@ venv/
 
 # Runtime data (if you don’t want to track per-user state)
 data/
+
+# Claude Code local memory
+.claude/
